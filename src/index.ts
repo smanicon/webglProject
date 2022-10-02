@@ -35,7 +35,6 @@ function main (): void {
 }
 
 function loadShader (gl: WebGLRenderingContext, shaderSource: string, shaderType: number): WebGLShader {
-  console.log(shaderSource)
   const shader: WebGLShader = gl.createShader(shaderType) as WebGLShader
   gl.shaderSource(shader, shaderSource)
   gl.compileShader(shader)

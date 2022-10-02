@@ -8,30 +8,23 @@ export class TriangularPrismDisplay {
 
   public constructor (gl: WebGLRenderingContext) {
     this.gl = gl
-    this.trianglesVerticesBuffer = this.loadTrianglesVerticesBuffer()
-    this.trianglesColorBuffer = this.loadTrianglesColorBuffer()
-    this.trianglesIndicesBuffer = this.loadTrianglesIndicesBuffer()
+    this.trianglesVerticesBuffer = this.loadFloatArrayBuffer(triangleVertices)
+    this.trianglesColorBuffer = this.loadFloatArrayBuffer(triangleVerticesColors)
+    this.trianglesIndicesBuffer = this.loadIndicesBuffer(triangleVertexIndices)
   }
 
-  private loadTrianglesVerticesBuffer (): WebGLBuffer {
-    const trianglesVerticesBuffer: WebGLBuffer = this.gl.createBuffer() as WebGLBuffer
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, trianglesVerticesBuffer)
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(triangleVertices), this.gl.STATIC_DRAW)
-    return trianglesVerticesBuffer
+  private loadFloatArrayBuffer (vertices: number[]): WebGLBuffer {
+    const buffer: WebGLBuffer = this.gl.createBuffer() as WebGLBuffer
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer)
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertices), this.gl.STATIC_DRAW)
+    return buffer
   }
 
-  private loadTrianglesColorBuffer (): WebGLBuffer {
-    const trianglesColorBuffer: WebGLBuffer = this.gl.createBuffer() as WebGLBuffer
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, trianglesColorBuffer)
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(triangleVerticesColors), this.gl.STATIC_DRAW)
-    return trianglesColorBuffer
-  }
-
-  private loadTrianglesIndicesBuffer (): WebGLBuffer {
-    const trianglesIndicesBuffer: WebGLBuffer = this.gl.createBuffer() as WebGLBuffer
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, trianglesIndicesBuffer)
-    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(triangleVertexIndices), this.gl.STATIC_DRAW)
-    return trianglesIndicesBuffer
+  private loadIndicesBuffer (indices: number[]): WebGLBuffer {
+    const buffer: WebGLBuffer = this.gl.createBuffer() as WebGLBuffer
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, buffer)
+    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.gl.STATIC_DRAW)
+    return buffer
   }
 
   public display (glProgram: WebGLProgram): void {
