@@ -33,6 +33,23 @@ export const triangleVerticesColors = [
   1.0, 1.0, 1.0
 ]
 
+export const triangleTextureVertices = [
+// front face
+  0.0, 0.0,
+  1.0, 0.0,
+  2.0, 0.0,
+  0.5, 1.0,
+  1.5, 1.0,
+  1.0, 2.0,
+  // rear face
+  0.0, 0.0,
+  1.0, 0.0,
+  2.0, 0.0,
+  0.5, 1.0,
+  1.5, 1.0,
+  1.0, 2.0
+]
+
 export const triangleVertexIndices = [
   // front face
   0, 1, 3,

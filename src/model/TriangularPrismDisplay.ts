@@ -1,15 +1,19 @@
-import { triangleVertices, triangleVerticesColors, triangleVertexIndices } from './TriangularPrismVertex'
+import { triangleVertices, triangleVerticesColors, triangleVertexIndices, triangleTextureVertices } from './TriangularPrismVertex'
+import textureSrc from '../images/opengl.svg'
 
 export class TriangularPrismDisplay {
   private readonly gl: WebGLRenderingContext
   private readonly trianglesVerticesBuffer: WebGLBuffer
   private readonly trianglesColorBuffer: WebGLBuffer
   private readonly trianglesIndicesBuffer: WebGLBuffer
+  private readonly trianglesTexCoordBuffer: WebGLBuffer
 
   public constructor (gl: WebGLRenderingContext) {
     this.gl = gl
+    this.loadTextureImage()
     this.trianglesVerticesBuffer = this.loadFloatArrayBuffer(triangleVertices)
     this.trianglesColorBuffer = this.loadFloatArrayBuffer(triangleVerticesColors)
+    this.trianglesTexCoordBuffer = this.loadFloatArrayBuffer(triangleTextureVertices)
     this.trianglesIndicesBuffer = this.loadIndicesBuffer(triangleVertexIndices)
   }
 
@@ -27,7 +31,34 @@ export class TriangularPrismDisplay {
     return buffer
   }
 
+  private loadTextureImage (): void {
+    const gl: WebGLRenderingContext = this.gl
+    const image: HTMLImageElement = new Image()
+
+    image.onload = function () {
+      const texture: WebGLTexture = gl.createTexture() as WebGLTexture
+      gl.bindTexture(gl.TEXTURE_2D, texture)
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+      if (!gl.isTexture(texture)) {
+        console.log('Error: Texture is invalid')
+      }
+    }
+    image.src = textureSrc
+  }
+
   public display (glProgram: WebGLProgram): void {
+    const textureUniform = this.gl.getUniformLocation(glProgram, 'uSampler')
+    this.gl.uniform1i(textureUniform, 0)
+
+    const vertexTexCoordAttribute = this.gl.getAttribLocation(glProgram, 'aVertexTextureCoord')
+    this.gl.enableVertexAttribArray(vertexTexCoordAttribute)
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.trianglesTexCoordBuffer)
+    this.gl.vertexAttribPointer(vertexTexCoordAttribute, 2, this.gl.FLOAT, false, 0, 0)
+
     const vertexAttribute = this.gl.getAttribLocation(glProgram, 'aVertexPosition')
     this.gl.enableVertexAttribArray(vertexAttribute)
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.trianglesVerticesBuffer)
@@ -39,6 +70,6 @@ export class TriangularPrismDisplay {
     this.gl.vertexAttribPointer(vertexAttributeColor, 3, this.gl.FLOAT, false, 0, 0)
 
     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.trianglesIndicesBuffer)
-    this.gl.drawElements(this.gl.TRIANGLES, 10, this.gl.UNSIGNED_SHORT, 0)
+    this.gl.drawElements(this.gl.TRIANGLES, 54, this.gl.UNSIGNED_SHORT, 0)
   }
 }

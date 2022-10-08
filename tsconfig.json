@@ -9,6 +9,6 @@
     "allowJs": true,
     "strictNullChecks": true
   },
-  "files": ["src/index.ts","raw-loader.d.ts"],
+  "files": ["src/index.ts","raw-loader.d.ts", "images.d.ts"],
   "lib": ["es2015"]
 }
