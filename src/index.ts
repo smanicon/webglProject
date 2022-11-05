@@ -1,7 +1,7 @@
 import { mat4 } from 'gl-matrix'
 import vertexShaderSource from './shader/vertex.vert'
 import fragmentShaderSource from './shader/fragment.frag'
-import { MeshDisplay } from './model/MeshDisplay'
+import { MeshDisplay } from './graphic/core/MeshDisplay'
 import { TriangularPrismMeshVertices } from './model/TriangularPrismMeshVertices'
 
 function main (): void {

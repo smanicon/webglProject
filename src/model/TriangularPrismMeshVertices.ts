@@ -1,4 +1,4 @@
-import { MeshVertices } from './MeshVertices'
+import { MeshVertices } from '../graphic/api/MeshVertices'
 
 export class TriangularPrismMeshVertices implements MeshVertices {
   vertices (): number[] {

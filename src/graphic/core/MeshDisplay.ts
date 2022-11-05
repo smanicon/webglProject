@@ -1,5 +1,5 @@
-import textureSrc from '../images/opengl.svg'
-import { MeshVertices } from './MeshVertices'
+import textureSrc from '../../images/opengl.svg'
+import { MeshVertices } from '../api/MeshVertices'
 
 export class MeshDisplay {
   private readonly gl: WebGLRenderingContext
