@@ -1,20 +1,20 @@
-import { triangleVertices, triangleVerticesColors, triangleVertexIndices, triangleTextureVertices } from './TriangularPrismVertex'
 import textureSrc from '../images/opengl.svg'
+import { MeshVertices } from './MeshVertices'
 
-export class TriangularPrismDisplay {
+export class MeshDisplay {
   private readonly gl: WebGLRenderingContext
   private readonly trianglesVerticesBuffer: WebGLBuffer
   private readonly trianglesColorBuffer: WebGLBuffer
   private readonly trianglesIndicesBuffer: WebGLBuffer
   private readonly trianglesTexCoordBuffer: WebGLBuffer
 
-  public constructor (gl: WebGLRenderingContext) {
+  public constructor (mesh: MeshVertices, gl: WebGLRenderingContext) {
     this.gl = gl
     this.loadTextureImage()
-    this.trianglesVerticesBuffer = this.loadFloatArrayBuffer(triangleVertices)
-    this.trianglesColorBuffer = this.loadFloatArrayBuffer(triangleVerticesColors)
-    this.trianglesTexCoordBuffer = this.loadFloatArrayBuffer(triangleTextureVertices)
-    this.trianglesIndicesBuffer = this.loadIndicesBuffer(triangleVertexIndices)
+    this.trianglesVerticesBuffer = this.loadFloatArrayBuffer(mesh.vertices())
+    this.trianglesColorBuffer = this.loadFloatArrayBuffer(mesh.colorVertices())
+    this.trianglesTexCoordBuffer = this.loadFloatArrayBuffer(mesh.UVTextureVertices())
+    this.trianglesIndicesBuffer = this.loadIndicesBuffer(mesh.indiceVertices())
   }
 
   private loadFloatArrayBuffer (vertices: number[]): WebGLBuffer {
