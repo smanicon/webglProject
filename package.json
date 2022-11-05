@@ -25,7 +25,7 @@
     "ajv": "^7.2.4",
     "ajv-dist": "^8.11.0",
     "css-loader": "^6.7.1",
-    "eslint": "^8.24.0",
+    "eslint": "8.22.0",
     "eslint-config-standard-with-typescript": "^23.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.3.0",
