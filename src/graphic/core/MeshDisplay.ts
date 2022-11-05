@@ -1,5 +1,6 @@
 import textureSrc from '../../images/opengl.svg'
-import { MeshVertices } from '../api/MeshVertices'
+import { Mesh } from '../api/Mesh'
+import { mat4 } from 'gl-matrix'
 
 export class MeshDisplay {
   private readonly gl: WebGLRenderingContext
@@ -7,14 +8,16 @@ export class MeshDisplay {
   private readonly trianglesColorBuffer: WebGLBuffer
   private readonly trianglesIndicesBuffer: WebGLBuffer
   private readonly trianglesTexCoordBuffer: WebGLBuffer
+  public readonly mesh: Mesh
 
-  public constructor (mesh: MeshVertices, gl: WebGLRenderingContext) {
+  public constructor (mesh: Mesh, gl: WebGLRenderingContext) {
     this.gl = gl
+    this.mesh = mesh
     this.loadTextureImage()
-    this.trianglesVerticesBuffer = this.loadFloatArrayBuffer(mesh.vertices())
-    this.trianglesColorBuffer = this.loadFloatArrayBuffer(mesh.colorVertices())
-    this.trianglesTexCoordBuffer = this.loadFloatArrayBuffer(mesh.UVTextureVertices())
-    this.trianglesIndicesBuffer = this.loadIndicesBuffer(mesh.indiceVertices())
+    this.trianglesVerticesBuffer = this.loadFloatArrayBuffer(mesh.getMeshVertices().vertices())
+    this.trianglesColorBuffer = this.loadFloatArrayBuffer(mesh.getMeshVertices().colorVertices())
+    this.trianglesTexCoordBuffer = this.loadFloatArrayBuffer(mesh.getMeshVertices().UVTextureVertices())
+    this.trianglesIndicesBuffer = this.loadIndicesBuffer(mesh.getMeshVertices().indiceVertices())
   }
 
   private loadFloatArrayBuffer (vertices: number[]): WebGLBuffer {
@@ -51,6 +54,15 @@ export class MeshDisplay {
   }
 
   public display (glProgram: WebGLProgram): void {
+    const mvMatrix = mat4.identity(mat4.create())
+    mat4.translate(mvMatrix, mvMatrix, new Float32Array([this.mesh.xPosition, this.mesh.yPosition, this.mesh.zPosition]))
+    mat4.rotateX(mvMatrix, mvMatrix, this.mesh.xRotation)
+    mat4.rotateY(mvMatrix, mvMatrix, this.mesh.yRotation)
+    mat4.rotateZ(mvMatrix, mvMatrix, this.mesh.zRotation)
+
+    const mvMatrixUniform: WebGLUniformLocation = this.gl.getUniformLocation(glProgram, 'uMVMatrix') as WebGLUniformLocation
+    this.gl.uniformMatrix4fv(mvMatrixUniform, false, mvMatrix)
+
     const textureUniform = this.gl.getUniformLocation(glProgram, 'uSampler')
     this.gl.uniform1i(textureUniform, 0)
 

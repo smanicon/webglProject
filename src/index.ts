@@ -3,6 +3,7 @@ import vertexShaderSource from './shader/vertex.vert'
 import fragmentShaderSource from './shader/fragment.frag'
 import { MeshDisplay } from './graphic/core/MeshDisplay'
 import { TriangularPrismMeshVertices } from './model/TriangularPrismMeshVertices'
+import { Mesh } from './graphic/api/Mesh'
 
 function main (): void {
   const canvas: HTMLCanvasElement = document.querySelector('#gl_canvas') as HTMLCanvasElement
@@ -21,7 +22,10 @@ function main (): void {
   gl.linkProgram(glProgram)
   gl.useProgram(glProgram)
 
-  const meshDisplay = new MeshDisplay(new TriangularPrismMeshVertices(), gl)
+  const mesh = new Mesh(new TriangularPrismMeshVertices())
+  const meshDisplay = new MeshDisplay(mesh, gl)
+
+  mesh.setPosition(0.0, 0.0, -3.0)
 
   const pMatrix = mat4.create()
   mat4.perspective(pMatrix, Math.PI / 2, canvas.width / canvas.height, 0.1, 100.0)
@@ -35,21 +39,12 @@ function displayScene (gl: WebGLRenderingContext, glProgram: WebGLProgram, frame
   gl.clearColor(0.1, 0.5, 0.1, 1.0)
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-  initScenePosition(gl, glProgram, [0.0, 0.0, -3.0], frame / 100)
+  meshDisplay.mesh.xRotation = frame / 100
+  meshDisplay.mesh.yRotation = frame / 100
 
   meshDisplay.display(glProgram)
 
   requestAnimationFrame(() => displayScene(gl, glProgram, frame + 1, meshDisplay))
-}
-
-function initScenePosition (gl: WebGLRenderingContext, glProgram: WebGLProgram, position: number[], rotation: number): void {
-  const mvMatrix = mat4.identity(mat4.create())
-  mat4.translate(mvMatrix, mvMatrix, new Float32Array(position))
-  mat4.rotateY(mvMatrix, mvMatrix, rotation)
-  mat4.rotateX(mvMatrix, mvMatrix, rotation)
-
-  const mvMatrixUniform: WebGLUniformLocation = gl.getUniformLocation(glProgram, 'uMVMatrix') as WebGLUniformLocation
-  gl.uniformMatrix4fv(mvMatrixUniform, false, mvMatrix)
 }
 
 function loadShader (gl: WebGLRenderingContext, shaderSource: string, shaderType: number): WebGLShader {
