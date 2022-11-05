@@ -1,9 +1,10 @@
-import { mat4 } from 'gl-matrix'
 import vertexShaderSource from './shader/vertex.vert'
 import fragmentShaderSource from './shader/fragment.frag'
 import { MeshDisplay } from './graphic/core/MeshDisplay'
 import { TriangularPrismMeshVertices } from './model/TriangularPrismMeshVertices'
 import { Mesh } from './graphic/api/Mesh'
+import { CameraDisplay } from './graphic/core/CameraDisplay'
+import { Camera } from './graphic/api/Camera'
 
 function main (): void {
   const canvas: HTMLCanvasElement = document.querySelector('#gl_canvas') as HTMLCanvasElement
@@ -27,10 +28,9 @@ function main (): void {
 
   mesh.setPosition(0.0, 0.0, -3.0)
 
-  const pMatrix = mat4.create()
-  mat4.perspective(pMatrix, Math.PI / 2, canvas.width / canvas.height, 0.1, 100.0)
-  const pMatrixUniform: WebGLUniformLocation = gl.getUniformLocation(glProgram, 'uPMatrix') as WebGLUniformLocation
-  gl.uniformMatrix4fv(pMatrixUniform, false, pMatrix)
+  const camera = new Camera()
+  const cameraDisplay = new CameraDisplay(camera, canvas.width / canvas.height, gl)
+  cameraDisplay.display(glProgram)
 
   displayScene(gl, glProgram, 0, meshDisplay)
 }
