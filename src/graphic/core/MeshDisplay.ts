@@ -54,34 +54,33 @@ export class MeshDisplay {
   }
 
   public display (glProgram: WebGLProgram): void {
+    const textureUniform = this.gl.getUniformLocation(glProgram, 'uSampler')
+    this.gl.uniform1i(textureUniform, 0)
+
+    this.assignPosition(glProgram, 'uMVMatrix')
+    this.assignBuffer(glProgram, 'aVertexTextureCoord', this.trianglesTexCoordBuffer, 2)
+    this.assignBuffer(glProgram, 'aVertexPosition', this.trianglesVerticesBuffer, 3)
+    this.assignBuffer(glProgram, 'aVertexColor', this.trianglesColorBuffer, 3)
+
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.trianglesIndicesBuffer)
+    this.gl.drawElements(this.gl.TRIANGLES, 54, this.gl.UNSIGNED_SHORT, 0)
+  }
+
+  private assignPosition (glProgram: WebGLProgram, mvMatrixName: string): void {
     const mvMatrix = mat4.identity(mat4.create())
     mat4.translate(mvMatrix, mvMatrix, new Float32Array([this.mesh.xPosition, this.mesh.yPosition, this.mesh.zPosition]))
     mat4.rotateX(mvMatrix, mvMatrix, this.mesh.xRotation)
     mat4.rotateY(mvMatrix, mvMatrix, this.mesh.yRotation)
     mat4.rotateZ(mvMatrix, mvMatrix, this.mesh.zRotation)
 
-    const mvMatrixUniform: WebGLUniformLocation = this.gl.getUniformLocation(glProgram, 'uMVMatrix') as WebGLUniformLocation
+    const mvMatrixUniform: WebGLUniformLocation = this.gl.getUniformLocation(glProgram, mvMatrixName) as WebGLUniformLocation
     this.gl.uniformMatrix4fv(mvMatrixUniform, false, mvMatrix)
+  }
 
-    const textureUniform = this.gl.getUniformLocation(glProgram, 'uSampler')
-    this.gl.uniform1i(textureUniform, 0)
-
-    const vertexTexCoordAttribute = this.gl.getAttribLocation(glProgram, 'aVertexTextureCoord')
+  private assignBuffer (glProgram: WebGLProgram, name: string, buffer: WebGLBuffer, size: number): void {
+    const vertexTexCoordAttribute = this.gl.getAttribLocation(glProgram, name)
     this.gl.enableVertexAttribArray(vertexTexCoordAttribute)
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.trianglesTexCoordBuffer)
-    this.gl.vertexAttribPointer(vertexTexCoordAttribute, 2, this.gl.FLOAT, false, 0, 0)
-
-    const vertexAttribute = this.gl.getAttribLocation(glProgram, 'aVertexPosition')
-    this.gl.enableVertexAttribArray(vertexAttribute)
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.trianglesVerticesBuffer)
-    this.gl.vertexAttribPointer(vertexAttribute, 3, this.gl.FLOAT, false, 0, 0)
-
-    const vertexAttributeColor = this.gl.getAttribLocation(glProgram, 'aVertexColor')
-    this.gl.enableVertexAttribArray(vertexAttributeColor)
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.trianglesColorBuffer)
-    this.gl.vertexAttribPointer(vertexAttributeColor, 3, this.gl.FLOAT, false, 0, 0)
-
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.trianglesIndicesBuffer)
-    this.gl.drawElements(this.gl.TRIANGLES, 54, this.gl.UNSIGNED_SHORT, 0)
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer)
+    this.gl.vertexAttribPointer(vertexTexCoordAttribute, size, this.gl.FLOAT, false, 0, 0)
   }
 }
